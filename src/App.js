@@ -1,25 +1,65 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useContext} from 'react'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import { UsersContext} from './context/UsersContext';
+import Banner from './components/Banner/BannerContainer';
+import Navbar from './components/Navbar//NavbarContainer'
+import Main from './components/Main/MainContainer'
+import AccountUser from './components/Account/AccountUser';
+import Login from './components/Login/LoginContainer';
+import styled from 'styled-components';
 
 function App() {
+
+  const { user, setUser } = useContext(UsersContext);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if(user){
+      setUser(user);
+    }
+    return () => {
+      localStorage.removeItem('user');
+
+    }
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppContainer>
+        <Router>
+          {
+            user ? (
+              <>
+              <Switch>
+  
+                <Route path="/" exact>
+                  <Navbar />
+                  <Banner />
+                  <Main />
+                </Route>
+                <Route path="/account">
+                  <Navbar />  
+                  <AccountUser />
+                </Route>
+              </Switch>
+              </>
+            ) : (
+              <Login />
+            )
+          }
+        </Router>
+
+    </AppContainer>
   );
 }
 
 export default App;
+
+const AppContainer = styled.div`
+  background-color: #111;
+`
+
